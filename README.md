@@ -63,15 +63,17 @@ pip install -r requirements.txt
 
 ### Step 4: Set Up Qdrant Vector Database
 You can run Qdrant using Docker for ease of setup. If you have Docker installed, use the following command:
+
 docker run -p 6333:6333 qdrant/qdrant
 
 ### Step 5: Load Data into Vector Database
 Ensure you have your data (PDF documents) in the data/ directory. Then, run the ingest.py script to load documents and create the vector database:
+
 python ingest.py
 
 ### Step 6: Run the Application
-Start the Flask application (or your chosen framework):
-python app.py
+Start the FastAPI application :
+uvicorn app.py
 
 ### Step 7: Access the Chatbot
 Open your web browser and go to http://localhost: (or the port you specified) to interact with the chatbot.
