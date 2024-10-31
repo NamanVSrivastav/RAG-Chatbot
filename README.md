@@ -1,4 +1,4 @@
-# This project implements a RAG-based chatbot designed to handle topic-specific queries while maintaining conversation context. It leverages advanced AI technologies for embeddings, prompt engineering, and query processing to optimize response accuracy and relevance.
+## This project implements a RAG-based chatbot designed to handle topic-specific queries while maintaining conversation context. It leverages advanced AI technologies for embeddings, prompt engineering, and query processing to optimize response accuracy and relevance.
 
 # Technologies Used
 
