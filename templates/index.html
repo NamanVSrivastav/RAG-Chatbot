@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+</head>
+<body>
+    <!-- Chat Display -->
+    <div id="chat-box"></div>
+    
+    <!-- Query Form -->
+    <form id="query-form">
+        <input type="text" id="user-query" name="query" placeholder="Ask me anything..." required>
+        <button type="submit">Send</button>
+    </form>
+
+    <!-- JavaScript to Handle Form Submission and Display Responses -->
+    <script>
+        // Function to display messages in the chat box
+        function displayMessage(message, type, doc = "") {
+            const chatBox = document.getElementById("chat-box");
+            const messageElement = document.createElement("p");
+            messageElement.classList.add(type);
+            messageElement.textContent = message;
+
+            if (doc) {
+                const docElement = document.createElement("span");
+                docElement.classList.add("source");
+                docElement.textContent = `Source: ${doc}`;
+                messageElement.appendChild(docElement);
+            }
+            
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Event Listener for Form Submission
+        document.getElementById("query-form").addEventListener("submit", async function(event) {
+            event.preventDefault();  // Prevent the form from refreshing the page
+            const query = document.getElementById("user-query").value;
+
+            // Display the user's query in the chat
+            displayMessage(query, "user-query");
+
+            // Send the query to the backend as form data
+            const response = await fetch("/get_response", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ query: query })  // Ensure 'query' is sent correctly
+            });
+
+            // Parse and display the response
+            if (response.ok) {
+                const data = await response.json();
+                displayMessage(data.answer, "bot-response", data.doc);
+                document.getElementById("user-query").value = "";  // Clear the input field
+            } else {
+                displayMessage("Error: Unable to get response", "bot-response");
+            }
+        });
+    </script>
+</body>
+</html>
