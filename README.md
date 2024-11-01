@@ -83,6 +83,7 @@ Test the chatbot by inputting various queries related to your chosen topic. Moni
 
 ### Step 9: Stop Qdrant
 If you're running Qdrant in a Docker container, you can stop it using:
+docker stop vector_db
 
 
 
