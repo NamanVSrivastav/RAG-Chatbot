@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Form, Response, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from langchain.prompts import PromptTemplate  # Use the correct import for PromptTemplate
+from langchain.prompts import PromptTemplate 
 from langchain.chains import RetrievalQA
-from langchain.embeddings import HuggingFaceEmbeddings  # Use the correct embeddings class
+from langchain.embeddings import HuggingFaceEmbeddings 
 from langchain_qdrant import Qdrant
 from qdrant_client import QdrantClient
-from langchain_llm import LlamaCpp  # Assuming you've placed your custom LLM package here
+from langchain_llm import LlamaCpp  
+from preprocess import preprocess_query
 import json
 
 app = FastAPI()
@@ -19,7 +20,7 @@ embeddings = HuggingFaceEmbeddings(model_name="NeuML/pubmedbert-base-embeddings"
 client = QdrantClient(url="http://localhost:6333", prefer_grpc=False)
 db = Qdrant(client=client, embeddings=embeddings, collection_name="vector_db")
 
-# Few-shot prompt examples
+
 few_shot_examples = [
     {
         "context": "The process of photosynthesis allows plants to convert light energy into chemical energy.",
@@ -33,7 +34,7 @@ few_shot_examples = [
     }
 ]
 
-# Format examples for the prompt
+# Format for the prompt
 formatted_examples = "\n".join([f"Context: {ex['context']}\nQuestion: {ex['question']}\nAnswer: {ex['answer']}" 
     for ex in few_shot_examples
 ])
@@ -58,6 +59,10 @@ async def read_root(request: Request):
 
 @app.post("/get_response")
 async def get_response(query: str = Form(...)):
+    # Preprocess the query
+    corrected_query, query_type = preprocess_query(query)
+    
+    # Use the  query in the QA chain
     context = ""
     qa = RetrievalQA.from_chain_type(
         llm=llm, 
@@ -67,7 +72,8 @@ async def get_response(query: str = Form(...)):
         chain_type_kwargs={"prompt": prompt, "examples": formatted_examples}
     )
     
-    response = qa(query)
+    # Get response using  query
+    response = qa(corrected_query)
     answer = response['result']
     source_document = response['source_documents'][0].page_content
     doc = response['source_documents'][0].metadata['source']
